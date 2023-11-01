@@ -9,7 +9,7 @@ connectToDB();
 
 const adminSecret = process.env.ADMIN_SECRET || "";
 
-const signupInputProps = z.object({
+const signinInputProps = z.object({
   username: z.string().email().min(1).max(50),
   password: z.string().min(1).max(20),
 });
@@ -18,20 +18,21 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const parsedInput = signupInputProps.safeParse(req.body);
+  const parsedInput = signinInputProps.safeParse(req.body);
 
   if (!parsedInput.success) {
-    return res.status(411).json({ error: parsedInput.error });
+    res.status(411).json({ error: parsedInput.error });
+    return;
   }
 
   const { username, password } = parsedInput.data;
-  const admin = await Admin.findOne({ username });
+  const admin = await Admin.findOne({ username, password });
 
-  if (admin) {
-    res.status(403).json({ message: "Admin already exists" });
+  if (!admin) {
+    res
+      .status(404)
+      .json({ message: "Admin not found or invalid username or password" });
   } else {
-    const newAdmin = new Admin({ username, password });
-    await newAdmin.save();
     const token = sign({ username, role: "admin" }, adminSecret, {
       expiresIn: "1d",
     });
@@ -44,6 +45,6 @@ export default async function handler(
     });
 
     res.setHeader("Set-Cookie", cookie);
-    res.status(201).json({ message: "Admin created successfully" });
+    res.json({ message: "Signed in successfully" });
   }
 }
