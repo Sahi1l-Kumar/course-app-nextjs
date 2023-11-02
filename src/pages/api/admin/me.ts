@@ -1,11 +1,11 @@
-import authenticateMiddleware from "@/lib/auth";
+import { authenticateAdminMiddleware } from "@/lib/auth";
 import { Admin } from "@/lib/db";
 import connectToDB from "@/lib/dbConnect";
 import { NextApiRequest, NextApiResponse } from "next";
 
 connectToDB();
 
-export default authenticateMiddleware(async function handler(
+export default authenticateAdminMiddleware(async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
