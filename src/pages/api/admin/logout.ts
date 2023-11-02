@@ -7,12 +7,12 @@ export default async function handler(
 ) {
   const cookies = req.cookies;
 
-  const token = cookies.authCookie;
+  const token = cookies.adminAuthCookie;
 
   if (!token) {
     return res.status(403).json({ message: "Already Logged out" });
   } else {
-    const cookie = serialize("authCookie", "", {
+    const cookie = serialize("adminAuthCookie", "", {
       httpOnly: true,
       sameSite: "strict",
       maxAge: -1,

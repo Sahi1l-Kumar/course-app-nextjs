@@ -1,4 +1,4 @@
-import { Admin } from "@/lib/db";
+import { User } from "@/lib/db";
 import connectToDB from "@/lib/dbConnect";
 import { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
@@ -7,7 +7,7 @@ import { serialize } from "cookie";
 
 connectToDB();
 
-const adminSecret = process.env.ADMIN_SECRET || "";
+const userSecret = process.env.USER_SECRET || "";
 
 const signupInputProps = z.object({
   username: z.string().email().min(1).max(50),
@@ -25,18 +25,18 @@ export default async function handler(
   }
 
   const { username, password } = parsedInput.data;
-  const admin = await Admin.findOne({ username });
+  const user = await User.findOne({ username });
 
-  if (admin) {
-    res.status(403).json({ message: "Admin already exists" });
+  if (user) {
+    res.status(403).json({ message: "User already exists" });
   } else {
-    const newAdmin = new Admin({ username, password });
-    await newAdmin.save();
-    const token = sign({ username, role: "admin" }, adminSecret, {
+    const newUser = new User({ username, password });
+    await newUser.save();
+    const token = sign({ username, role: "user" }, userSecret, {
       expiresIn: "1d",
     });
 
-    const cookie = serialize("adminAuthCookie", token, {
+    const cookie = serialize("userAuthCookie", token, {
       httpOnly: true,
       maxAge: 1 * 24 * 60 * 60,
       sameSite: "strict",
@@ -44,6 +44,6 @@ export default async function handler(
     });
 
     res.setHeader("Set-Cookie", cookie);
-    res.status(201).json({ message: "Admin created successfully" });
+    res.status(201).json({ message: "User created successfully" });
   }
 }

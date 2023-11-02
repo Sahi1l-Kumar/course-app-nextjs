@@ -37,7 +37,7 @@ export default async function handler(
       expiresIn: "1d",
     });
 
-    const cookie = serialize("authCookie", token, {
+    const cookie = serialize("adminAuthCookie", token, {
       httpOnly: true,
       maxAge: 1 * 24 * 60 * 60,
       sameSite: "strict",

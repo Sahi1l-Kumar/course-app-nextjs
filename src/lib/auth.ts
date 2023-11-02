@@ -15,7 +15,7 @@ export function authenticateAdminMiddleware(
   handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void>
 ) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
-    const token = req.cookies.authCookie as string;
+    const token = req.cookies.adminAuthCookie as string;
 
     if (!token) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -43,7 +43,7 @@ export function authenticateUserMiddleware(
   handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void>
 ) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
-    const token = req.cookies.authCookie as string;
+    const token = req.cookies.userAuthCookie as string;
 
     if (!token) {
       return res.status(401).json({ message: "Unauthorized" });
